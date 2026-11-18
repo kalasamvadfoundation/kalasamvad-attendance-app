@@ -1,10 +1,12 @@
 
-const CACHE_NAME = "kalasamvad-attendance-v1";
+const CACHE_NAME = "kalasamvad-attendance-v2";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./apple-touch-icon.png",
+  "./kalasamvad-icon-512.png"
 ];
 
 self.addEventListener("install", function(event) {
@@ -46,10 +48,12 @@ self.addEventListener("fetch", function(event) {
     fetch(request).then(function(response) {
       if (response && response.ok) {
         const copy = response.clone();
+
         caches.open(CACHE_NAME).then(function(cache) {
           cache.put(request, copy);
         });
       }
+
       return response;
     }).catch(function() {
       return caches.match(request).then(function(cached) {
