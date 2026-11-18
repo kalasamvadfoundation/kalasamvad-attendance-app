@@ -4,12 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <meta name="theme-color" content="#167e99">
   <meta name="description" content="Kalasamvad Foundation Attendance App">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Kalasamvad">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <title>Kalasamvad Attendance</title>
 
+  <link rel="manifest" href="./manifest.json">
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -67,6 +77,20 @@
       cursor: pointer;
     }
 
+    .install-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid #167e99;
+      border-radius: 12px;
+      background: white;
+      color: #167e99;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     .footer {
       margin-top: 25px;
       font-size: 12px;
@@ -77,6 +101,7 @@
 
 <body>
   <main class="app">
+
     <img
       class="logo"
       src="https://drive.google.com/thumbnail?id=1K_oWejGxXp-p47o8YvXCSSchOE7A9wPT&sz=w500"
@@ -97,9 +122,56 @@
       Open Attendance App
     </a>
 
+    <button id="installButton" class="install-btn">
+      Install Kalasamvad App
+    </button>
+
     <div class="footer">
       © Kalasamvad Foundation
     </div>
+
   </main>
+
+  <script>
+    // Register Service Worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function() {
+        navigator.serviceWorker.register("./service-worker.js")
+          .then(function() {
+            console.log("Kalasamvad App is ready");
+          })
+          .catch(function(error) {
+            console.log("Service Worker Error:", error);
+          });
+      });
+    }
+
+    // Install App button
+    let installPrompt;
+
+    const installButton = document.getElementById("installButton");
+
+    window.addEventListener("beforeinstallprompt", function(event) {
+      event.preventDefault();
+      installPrompt = event;
+      installButton.style.display = "block";
+    });
+
+    installButton.addEventListener("click", async function() {
+      if (!installPrompt) return;
+
+      installPrompt.prompt();
+
+      await installPrompt.userChoice;
+
+      installPrompt = null;
+      installButton.style.display = "none";
+    });
+
+    window.addEventListener("appinstalled", function() {
+      installButton.style.display = "none";
+    });
+  </script>
+
 </body>
 </html>
